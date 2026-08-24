@@ -1,6 +1,6 @@
 {
   "name": "dsh-web-degoog",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "DeepSeek Harness web-search/web-fetch provider bundle backed by any degoog instance",
   "license": "MIT",
   "author": "Shantanu Goel",
@@ -13,6 +13,14 @@
   },
   "engines": {
     "node": ">=20"
+  },
+  "devDependencies": {
+    "@deepseek-ai/dsh-credentials": "^0.1.1-rc.2",
+    "@deepseek-ai/dsh-home-paths": "^0.1.1-rc.2",
+    "@deepseek-ai/dsh-launch-environment": "^0.1.1-rc.2",
+    "@deepseek-ai/dsh-settings": "^0.1.1-rc.2",
+    "@deepseek-ai/dsh-web": "^0.1.1-rc.2",
+    "@deepseek-ai/schemastery": "^3.18.1"
   },
   "keywords": [
     "deepseek-harness",
@@ -38,13 +46,21 @@
       "inject": []
     }
   },
-  "dependencies": {
+  "peerDependencies": {
     "@deepseek-ai/dsh-credentials": "^0.1.1-rc.2",
     "@deepseek-ai/dsh-home-paths": "^0.1.1-rc.2",
     "@deepseek-ai/dsh-launch-environment": "^0.1.1-rc.2",
     "@deepseek-ai/dsh-settings": "^0.1.1-rc.2",
     "@deepseek-ai/dsh-web": "^0.1.1-rc.2",
     "@deepseek-ai/schemastery": "^3.18.1"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/dsh-credentials": { "optional": true },
+    "@deepseek-ai/dsh-home-paths": { "optional": true },
+    "@deepseek-ai/dsh-launch-environment": { "optional": true },
+    "@deepseek-ai/dsh-settings": { "optional": true },
+    "@deepseek-ai/dsh-web": { "optional": true },
+    "@deepseek-ai/schemastery": { "optional": true }
   },
   "repository": {
     "type": "git",
