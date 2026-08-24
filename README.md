@@ -30,18 +30,34 @@ profile's bundle stack automatically: the bundle joins the layer list on
 add and leaves it on remove. The bundled patch selects `degoog` for both
 web capabilities and turns `web_fetch` on (`fetch: true`).
 
-Then set your instance URL once, either in the Web UI (**Settings ->
-web-search-degoog -> serverUrl**) or in `~/.dsh/profiles/web/cordis.patch.yml`:
+### Configuring the instance URL
 
-```yaml
-- id: web-search-degoog
-  config:
-    serverUrl: https://degoog.example.com   # your instance
-    # apiKeyEnv: DEGOOG_API_KEY             # default; needed only if your instance protects search routes
-```
+There is no auto-generated settings form for third-party bundles (the
+Plugins page renders only cards a bundle explicitly ships), so pick one of
+these:
 
-Restart the harness (or reload the profile) after changing patch files;
-settings-page edits apply live.
+1. **Launch environment** - zero files to edit. The harness reads
+   `DEGOOG_SERVER_URL` at boot:
+
+   ```sh
+   DEGOOG_SERVER_URL=https://degoog.example.com dsh --profile web
+   ```
+
+2. **Patch file** - survives restarts, hot-reloads on the running web
+   profile. In `~/.dsh/profiles/web/cordis.patch.yml`:
+
+   ```yaml
+   - id: web-search-degoog
+     config:
+       serverUrl: https://degoog.example.com
+   ```
+
+The API key needs no file either: export `DEGOOG_API_KEY` in the launching
+environment or store it via the harness credential service; both are
+resolved per search.
+
+A settings card for this bundle (registered into the Plugins page's
+`settings.plugin.item` slot) is planned for a later version.
 
 ### Sessions on web profiles: one-time preset pick
 
