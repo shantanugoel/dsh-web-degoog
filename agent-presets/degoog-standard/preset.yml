@@ -1,3 +1,6 @@
-name: 标准模式
-description: 功能完整的编码 Agent，支持文件编辑、Shell、文件与网页检索、Skills、计划、目标、子代理和工作流。
-order: 1
+name: degoog-standard
+description: >-
+  Standard toolset with web_fetch enabled; web_search and web_fetch route
+  through your degoog instance. Managed by the dsh-web-degoog bundle — edits
+  here are preserved until the bundle's own preset changes.
+order: 5
