@@ -62,6 +62,13 @@ const mapped = mapDegoogResponse({ results: [
 ] });
 check('mapping dedupes and skips', mapped.sources.length === 2 && mapped.truncated === false);
 check('snippet falls back to content', mapped.sources[1].snippet === 'content-only snippet');
+check('empty results stay valid', mapDegoogResponse({ results: [] }).sources.length === 0);
+function shapeError(payload) {
+  try { mapDegoogResponse(payload); return null; } catch (error) { return error; }
+}
+check('missing results array throws', shapeError({}).code === 'DEGOOG_UNEXPECTED_RESPONSE');
+check('non-array results throws', shapeError({ results: 'nope' }).code === 'DEGOOG_UNEXPECTED_RESPONSE');
+check('in-band error surfaces detail', (shapeError({ error: 'rate limited' })?.message ?? '').includes('rate limited'));
 
 // --- fetch provider guard + live ------------------------------------------
 const fetcher = new DegoogFetchProvider(blankOptions);
