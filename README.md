@@ -37,7 +37,7 @@ Plugins page renders only cards a bundle explicitly ships), so pick one of
 these:
 
 1. **Launch environment** - zero files to edit. The harness reads
-   `DEGOOG_SERVER_URL` at boot:
+   `DEGOOG_SERVER_URL` at boot (the API key already rides `DEGOOG_API_KEY`):
 
    ```sh
    DEGOOG_SERVER_URL=https://degoog.example.com dsh --profile web
@@ -52,12 +52,25 @@ these:
        serverUrl: https://degoog.example.com
    ```
 
-The API key needs no file either: export `DEGOOG_API_KEY` in the launching
-environment or store it via the harness credential service; both are
-resolved per search.
+### Configuring from the Web UI
 
-A settings card for this bundle (registered into the Plugins page's
-`settings.plugin.item` slot) is planned for a later version.
+The bundle ships a browser half: a **degoog search & fetch** card under
+**Settings -> Plugins** (the configurable tab), with fields for the
+instance URL, API-key credential name, search type, and language. Edits
+stage locally and commit through the revision-fenced settings write path;
+each field shows an override marker with one-click reset to its
+downstream default.
+
+Value precedence, highest first:
+
+1. Settings-page card (the user settings document)
+2. Profile patch entry config (`cordis.patch.yml`)
+3. Launch environment (`DEGOOG_SERVER_URL`, `DEGOOG_API_KEY`)
+4. Built-in defaults (blank URL keeps search unconfigured)
+
+### Configuring without the UI
+
+Both non-UI paths remain fully supported:
 
 ### Sessions on web profiles: one-time preset pick
 

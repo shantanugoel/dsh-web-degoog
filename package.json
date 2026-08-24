@@ -1,13 +1,15 @@
 {
   "name": "dsh-web-degoog",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "DeepSeek Harness web-search/web-fetch provider bundle backed by any degoog instance",
   "license": "MIT",
   "author": "Shantanu Goel",
   "type": "module",
   "main": "lib/index.js",
   "exports": {
-    ".": "./lib/index.js"
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
   },
   "engines": {
     "node": ">=20"
@@ -30,6 +32,10 @@
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": []
     }
   },
   "dependencies": {
