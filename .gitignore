@@ -1,3 +1,4 @@
 node_modules/
 .testhome/
 *.log
+.pnpm-store/
