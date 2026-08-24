@@ -1,0 +1,37 @@
+# dsh-web-degoog bundle layer.
+#
+# Applied in dsh.profile.bundles order, after the in-box bundles and before
+# the user's own ~/.dsh/<profile>/cordis.patch.yml layer.
+#
+# NOTE: patch fields replace wholesale (no deep merge), so override configs
+# below restate every field we care about from the shipped defaults rather
+# than only the ones we change.
+- insert:
+    - id: web-search-degoog
+      name: dsh-web-degoog
+      config:
+        # Blank by default: the instance URL is a deployment choice. Set it
+        # in the Web UI (Settings -> web-search-degoog) or right here.
+        serverUrl: ''
+        apiKeyEnv: DEGOOG_API_KEY
+        searchType: web
+        lang: ''
+        # Fetch-side SSRF escape hatch: dial private/loopback addresses (LAN
+        # self-hosted targets). Keep false unless this machine must scrape
+        # LAN hosts.
+        allowPrivateAddresses: false
+
+# Select degoog for both web capabilities once this bundle is installed.
+- id: web
+  name: '@deepseek-ai/dsh-web'
+  config:
+    searchProvider: degoog
+    fetchProvider: degoog
+
+# Enable the model-facing web_fetch tool. Restated in full because patch
+# fields replace wholesale; searchTimeoutMs mirrors the shipped default.
+- id: tool-web
+  name: '@deepseek-ai/dsh-tool-web'
+  config:
+    fetch: true
+    searchTimeoutMs: 60000
