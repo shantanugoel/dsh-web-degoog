@@ -1,6 +1,6 @@
 {
   "name": "dsh-web-degoog",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "DeepSeek Harness web-search/web-fetch provider bundle backed by any degoog instance",
   "license": "MIT",
   "author": "Shantanu Goel",

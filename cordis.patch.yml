@@ -3,11 +3,9 @@
 # Applied in dsh.profile.bundles order, after the in-box bundles and before
 # the user's own ~/.dsh/<profile>/cordis.patch.yml layer.
 #
-# This layer only inserts the provider plugin. It does not select degoog as
-# search/fetch provider and does not enable web_fetch: those are opt-in so
-# installing the bundle cannot break DeepSeek official search or shadow a
-# preset's tool-web row. See the README for the user-layer patch and preset
-# edit.
+# NOTE: patch fields replace wholesale (no deep merge), so override configs
+# below restate every field we care about from the shipped defaults rather
+# than only the ones we change.
 - insert:
     - id: web-search-degoog
       name: dsh-web-degoog
@@ -22,3 +20,13 @@
         # self-hosted targets). Keep false unless this machine must scrape
         # LAN hosts.
         allowPrivateAddresses: false
+
+# Installing this bundle means using degoog. Official search returns when
+# the bundle is removed, or if a later user patch sets another id.
+# dsh-web has no settings namespace, so this is the no-file-edit selection
+# path; the Plugins card only edits this plugin's own fields (URL, key…).
+- id: web
+  name: '@deepseek-ai/dsh-web'
+  config:
+    searchProvider: degoog
+    fetchProvider: degoog

@@ -13,10 +13,11 @@ every deployment.
 | `degoog` | `web_search` | Your degoog instance's native `GET /api/search` (merged, scored, deduplicated results across its engines). Optional bearer-token auth for protected instances. |
 | `degoog` | `web_fetch` | **Direct** retrieval from the harness machine under an SSRF guard (below). degoog core has no scrape endpoint, so this side never contacts your instance. HTML returns as `kind: 'html'`; dsh-tool-web converts it to Markdown. |
 
-Installing the bundle **registers** both providers. It does **not** select them
-and does **not** turn `web_fetch` on. Until you opt in (below), DeepSeek
-official search keeps working: an unconfigured degoog search provider reports
-unavailable, so the web seam auto-selects the remaining usable provider.
+Installing the bundle registers both providers **and selects them** for
+`web_search` / `web_fetch`. Configure the instance URL in the Settings UI;
+no profile YAML is required for everyday use. `web_fetch` stays off until
+you enable it in an agent preset you own (dsh does not let a bundle edit
+shipped presets). Removing the plugin restores DeepSeek official search.
 
 ## Install
 
@@ -26,10 +27,16 @@ dsh plugin --profile web add dsh-web-degoog
 
 Because the package declares `dsh.bundle.patch`, the CLI reconciles the
 profile's bundle stack automatically: the bundle joins the layer list on
-add and leaves it on remove. The bundled patch only inserts the
-`web-search-degoog` plugin row.
+add and leaves it on remove. The bundled patch inserts this plugin and
+sets `web.searchProvider` / `web.fetchProvider` to `degoog`.
 
-### 1. Configure the instance URL
+`@deepseek-ai/dsh-web` has no settings namespace, so provider selection
+cannot live on the Plugins page. Selecting degoog in the bundle patch is
+the supported zero-file-edit path; a later user patch or
+`$DSH_WEB_SEARCH_PROVIDER` still wins if you need to switch back without
+uninstalling.
+
+### Configure the instance URL
 
 There is no auto-generated settings form for third-party bundles (the
 Plugins page renders only cards a bundle explicitly ships), so pick one of
@@ -64,40 +71,17 @@ Value precedence, highest first:
 3. Launch environment (`DEGOOG_SERVER_URL`, `DEGOOG_API_KEY`)
 4. Built-in defaults (blank URL keeps search unconfigured)
 
-### 2. Select degoog for search (and fetch, if more than one fetch provider)
-
-The web seam auto-selects only when exactly one usable provider is registered.
-After `serverUrl` is set, DeepSeek official search is still usable, so you
-must pick degoog explicitly:
-
-```sh
-DSH_WEB_SEARCH_PROVIDER=degoog DSH_WEB_FETCH_PROVIDER=degoog dsh --profile web
-```
-
-Or in `~/.dsh/profiles/web/cordis.patch.yml` (this layer wins over the
-bundle):
-
-```yaml
-- id: web
-  name: '@deepseek-ai/dsh-web'
-  config:
-    searchProvider: degoog
-    fetchProvider: degoog
-```
-
-Stock dsh ships no fetch provider, so `fetchProvider` is optional until
-another fetch plugin is installed.
-
-### 3. Enable `web_fetch` in your agent preset
+### Enable `web_fetch` in a preset you own
 
 On web profiles the host `tool-web` row is disabled; each session takes
-`web_search` / `web_fetch` from its **agent preset**. Shipped presets pin
-`fetch: false`, and a bundle cannot patch a preset file. Duplicate a shipped
-preset and flip the flag:
+`web_search` / `web_fetch` from its **agent preset**. Shipped presets
+(Standard, PTC, Minimal, …) pin `fetch: false` and are read-only. A bundle
+cannot patch them, and they cannot register a settings namespace. Duplicate
+the preset you use and flip the flag:
 
-1. **Settings -> Agent presets -> Duplicate** Standard (or edit an existing
-   custom preset).
-2. In that copy's `agent.cordis.yml`, set:
+1. **Settings -> Agent presets -> Duplicate** Standard (or PTC, or any
+   custom preset you already own).
+2. **Open folder** on the copy. In `agent.cordis.yml`, set:
 
    ```yaml
    - id: tool-web
@@ -107,11 +91,12 @@ preset and flip the flag:
        searchTimeoutMs: 60000
    ```
 
-3. Pick that preset for new sessions (or make it the default). Sessions that
+3. Pick that copy for new sessions (or make it the default). Sessions that
    already ran stay on the preset they started with.
 
-Headless/TUI profiles that still mount host-plane `tool-web` can set the same
-`fetch: true` on the host `tool-web` row in the profile patch instead.
+You cannot turn `web_fetch` on *inside* shipped Standard/PTC themselves.
+Headless/TUI profiles that still mount host-plane `tool-web` can set the
+same `fetch: true` on the host `tool-web` row in the profile patch instead.
 
 ## Configuration
 
@@ -150,9 +135,8 @@ Search errors use stable codes: `DEGOOG_SERVER_URL_MISSING`,
 dsh plugin --profile web remove dsh-web-degoog
 ```
 
-The bundle layer leaves the stack automatically. DeepSeek's official search
-provider stays registered. If you opted in with `DSH_WEB_SEARCH_PROVIDER` or
-a user-layer `web.searchProvider: degoog`, remove that override too.
+The bundle layer leaves the stack automatically, including the degoog
+provider selection, so DeepSeek official search is selectable again.
 
 This package does not write agent presets or delete leftover files. If an
 older release created `~/.dsh/.agent-presets/degoog-standard`, switch the
