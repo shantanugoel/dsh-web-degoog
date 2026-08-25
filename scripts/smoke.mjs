@@ -28,6 +28,8 @@ for (const [ip, expected] of v4Cases) {
 }
 const v6Cases = [
   ['::1', true], ['::', true], ['::ffff:127.0.0.1', true], ['::ffff:8.8.8.8', false],
+  ['::127.0.0.1', true], ['::7f00:1', true], ['::808:808', false],
+  ['2002:7f00:1::', true], ['2002:0808:0808::', false],
   ['fe80::1', true], ['fec0::1', false], ['fc00::1', true], ['fd12:3456::1', true],
   ['ff02::1', true], ['64:ff9b::7f00:1', true], ['64:ff9b::808:808', false],
   ['2001:4860:4860::8888', false], ['2606:4700:4700::1111', false],
@@ -75,8 +77,13 @@ const fetcher = new DegoogFetchProvider(blankOptions);
 check('fetch always available', fetcher.available() === true);
 await expectCode('fetch 127.0.0.1 blocked', fetcher.fetch({ url: 'http://127.0.0.1:9/x' }), 'DEGOOG_FETCH_BLOCKED_HOST');
 await expectCode('fetch [::1] blocked', fetcher.fetch({ url: 'http://[::1]/x' }), 'DEGOOG_FETCH_BLOCKED_HOST');
+await expectCode('fetch ipv4-compatible ::127.0.0.1 blocked', fetcher.fetch({ url: 'http://[::127.0.0.1]/x' }), 'DEGOOG_FETCH_BLOCKED_HOST');
+await expectCode('fetch ipv4-compatible ::7f00:1 blocked', fetcher.fetch({ url: 'http://[::7f00:1]/x' }), 'DEGOOG_FETCH_BLOCKED_HOST');
+await expectCode('fetch 6to4 loopback blocked', fetcher.fetch({ url: 'http://[2002:7f00:1::]/x' }), 'DEGOOG_FETCH_BLOCKED_HOST');
 await expectCode('fetch metadata IP blocked', fetcher.fetch({ url: 'http://169.254.169.254/latest/meta-data/' }), 'DEGOOG_FETCH_BLOCKED_HOST');
 await expectCode('fetch ftp scheme rejected', fetcher.fetch({ url: 'ftp://example.com/x' }), 'DEGOOG_FETCH_INVALID_URL');
+await expectCode('fetch embedded credentials rejected', fetcher.fetch({ url: 'https://user:pass@example.com/' }), 'DEGOOG_FETCH_INVALID_URL');
+await expectCode('fetch overlong URL rejected', fetcher.fetch({ url: 'https://example.com/' + 'a'.repeat(2100) }), 'DEGOOG_FETCH_INVALID_URL');
 
 const ok = await fetcher.fetch({ url: 'https://example.com/' });
 check('live https fetch status 200', ok.statusCode === 200, String(ok.statusCode));

@@ -1,6 +1,0 @@
-name: degoog-standard
-description: >-
-  Standard toolset with web_fetch enabled; web_search and web_fetch route
-  through your degoog instance. Managed by the dsh-web-degoog bundle — edits
-  here are preserved until the bundle's own preset changes.
-order: 5
