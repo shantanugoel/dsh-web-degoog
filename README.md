@@ -13,17 +13,23 @@ every deployment.
 | `degoog` | `web_search` | Your degoog instance's native `GET /api/search` (merged, scored, deduplicated results across its engines). Optional bearer-token auth for protected instances. |
 | `degoog` | `web_fetch` | **Direct** retrieval from the harness machine under an SSRF guard (below). degoog core has no scrape endpoint, so this side never contacts your instance. HTML returns as `kind: 'html'`; dsh-tool-web converts it to Markdown. |
 
-Installing the bundle registers both providers **and selects them** for
-`web_search` / `web_fetch`. Configure the instance URL in the Settings UI;
-no profile YAML is required for everyday use. `web_fetch` stays off until
-you enable it in an agent preset you own (dsh does not let a bundle edit
-shipped presets). Removing the plugin restores DeepSeek official search.
+Installing the bundle registers both providers **and selects them**. Set the
+instance URL in Settings. **`web_fetch` is still off** until you enable it
+in a preset you own — shipped Standard/PTC cannot be edited in place.
 
 ## Install
 
 ```sh
 dsh plugin --profile web add dsh-web-degoog
 ```
+
+Then do these two things (search will not work without the first; fetch
+will not appear without the second):
+
+1. **Settings → Plugins → degoog search & fetch** — set Instance URL.
+2. **Settings → Agent presets → Duplicate** the preset you use → **Open
+   folder** → in that copy’s `agent.cordis.yml` set `tool-web` `fetch: true`
+   (see [Enable web_fetch](#enable-web_fetch-shipped-presets-cannot-be-edited)).
 
 Because the package declares `dsh.bundle.patch`, the CLI reconciles the
 profile's bundle stack automatically: the bundle joins the layer list on
@@ -71,7 +77,7 @@ Value precedence, highest first:
 3. Launch environment (`DEGOOG_SERVER_URL`, `DEGOOG_API_KEY`)
 4. Built-in defaults (blank URL keeps search unconfigured)
 
-### Enable `web_fetch` in a preset you own
+## Enable `web_fetch` (shipped presets cannot be edited)
 
 On web profiles the host `tool-web` row is disabled; each session takes
 `web_search` / `web_fetch` from its **agent preset**. Shipped presets
