@@ -11,7 +11,9 @@
       name: dsh-web-degoog
       config:
         # Blank by default: the instance URL is a deployment choice. Set it
-        # in the Web UI (Settings -> Plugins) or right here.
+        # on the Plugins page (Installed plugins -> dsh-web-degoog -> Configure)
+        # or right here. Every field below except allowPrivateAddresses is
+        # volatile, so Plugins-page edits apply without a restart.
         serverUrl: ''
         apiKeyEnv: DEGOOG_API_KEY
         searchType: web
@@ -23,8 +25,8 @@
 
 # Installing this bundle means using degoog. Official search returns when
 # the bundle is removed, or if a later user patch sets another id.
-# dsh-web has no settings namespace, so this is the no-file-edit selection
-# path; the Plugins card only edits this plugin's own fields (URL, key…).
+# dsh-web has no settings namespace of its own, so this is the no-file-edit
+# selection path; the Plugins page only edits this plugin's own fields.
 - id: web
   name: '@deepseek-ai/dsh-web'
   config:
